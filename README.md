@@ -73,3 +73,68 @@ SKU = DIGIT, { DIGIT } ;
 LETTER = ( a | ... | z | A | ... | Z ) ;
 
 DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
+
+
+---
+
+Entrada:
+
+Uma possível entrada:
+```
+{
+  "B2": [
+    {
+      "nome": "Feijao_Preto",
+      "sku": "67890",
+      "quantidade": 50,
+      "validade": "15/11/2024"
+    }
+  ]
+}
+
+```
+Com as seguintes operações:
+```
+{
+(Arroz_Integral, 12345) = (100, 01/12/2025)
+(Feijao_Preto, 67890) = (50, 15/11/2024)
+
+receber(12345, 100)
+receber(67890, 50)
+
+alocar(12345, 100, A1)
+alocar(67890, 50, B2)
+
+exibir(A1)
+exibir(B2)
+
+se (validade(67890) < hoje()) {
+    descartar(67890, 100)
+} senao {
+    vender(67890, 10)
+}
+
+vender(12345, 20)
+
+conferir(12345)
+conferir(67890)
+
+exibir(12345)
+}
+```
+
+Levaria a uma saída:
+
+```
+{
+  "A1": [
+    {
+      "nome": "Arroz_Integral",
+      "sku": "12345",
+      "quantidade": 80,
+      "validade": "01/12/2025"
+    }
+  ],
+  "B2": []
+}
+```
