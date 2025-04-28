@@ -26,7 +26,7 @@ ENTRADA = "(",NOME, ",", SKU, ")", "=", "(", EXPRESSION, ",", DATA_VALIDADE, ")â
 
 RECEBER = "receber", "(", SKU, ",", EXPRESSION, ")";
 
-MOVER = "mover", "(", SKU, ",", POSICAO,",", POSICAO ")" ;
+MOVER = "mover", "(", SKU, ",", EXPRESSION, POSICAO,",", POSICAO ")" ;
 
 ALOCAR = "alocar", "(", SKU, ",", EXPRESSION, ",", POSICAO, ")";
 
