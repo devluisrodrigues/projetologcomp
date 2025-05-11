@@ -38,7 +38,7 @@ DESCARTAR = "descartar", "(", SKU, ",", EXPRESSION, ")";
 
 EXIBIR = "exibir", "(", SKU | POSICAO, ")" ;
 
-CONFERIR = "estoque, "(", SKU, ")";
+CONFERIR = "estoque", "(", SKU, ")";
 
 VALIDADE = "validade” , "(", SKU, ")";
 
@@ -116,8 +116,8 @@ se (validade(67890) < hoje()) {
 
 vender(12345, 20)
 
-conferir(12345)
-conferir(67890)
+estoque(12345)
+estoque(67890)
 
 exibir(12345)
 }
@@ -137,4 +137,23 @@ Levaria a uma saída:
   ],
   "B2": []
 }
+```
+
+
+---
+
+** Flex e Bison**
+
+Os arquivos do Flex e Bison foram criados para serem utilizados em conjunto, o arquivo `scanner.l` é o Scanner, que realiza o papel de tokenizer através do Flex, e o arquivo `parser.y` é o Parser, que realiza a análise sintática através do Bison. O arquivo `main.c` é o ponto de entrada do programa, onde o Scanner e o Parser são inicializados e executados.
+
+Para compilar foram usados os seguintes comandos:
+
+```bash
+flex scanner.l
+
+bison -d parser.y
+
+gcc -o projeto main.c parser.tab.c lex.yy.c
+
+./projeto < entrada.txt
 ```
