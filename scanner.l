@@ -18,7 +18,7 @@ DATA       {DIGITO}{DIGITO}\/{DIGITO}{DIGITO}\/{DIGITO}{DIGITO}{DIGITO}{DIGITO}
 ","              return VIRGULA;
 "("              return ABRE_PAREN;
 ")"              return FECHA_PAREN;
-"="              return IGUAL;
+"="              return ATRIBUI;
 "||"             return OR;
 "&&"             return AND;
 "=="             return COMPARA_IGUAL;
