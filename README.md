@@ -22,15 +22,15 @@ Assim, a linguagem poderia operar a partir de um estado inicial recebido, compil
 
 BLOCO = "{", "\n", { STATEMENT }, "}";
 
-STATEMENT = ( λ | ENTRADA | RECEBER | ALOCAR | VENDER | DESCARTAR | EXIBIR | CONFERIR | VALIDADE | MOVER |ENQUANTO | SE), "\n" ;
+STATEMENT = ( λ | ENTRADA | RECEBER | ALOCAR | MOVER | VENDER | DESCARTAR | EXIBIR | VARDEC | VARASSIGN | ENQUANTO | SE), "\n" ;
 
 ENTRADA = "(",NOME, ",", SKU, ")", "=", "(", EXPRESSION, ",", DATA_VALIDADE, ")”;
 
 RECEBER = "receber", "(", SKU, ",", EXPRESSION, ")";
 
-MOVER = "mover", "(", SKU, ",", EXPRESSION, POSICAO,",", POSICAO ")" ;
-
 ALOCAR = "alocar", "(", SKU, ",", EXPRESSION, ",", POSICAO, ")";
+
+MOVER = "mover", "(", SKU, ",", EXPRESSION, POSICAO,",", POSICAO ")" ;
 
 VENDER = "vender", "(", SKU, ",", EXPRESSION, ")";
 
@@ -38,9 +38,9 @@ DESCARTAR = "descartar", "(", SKU, ",", EXPRESSION, ")";
 
 EXIBIR = "exibir", "(", SKU | POSICAO, ")" ;
 
-CONFERIR = "estoque", "(", SKU, ")";
+VARDEC = ("bool_var" | "int_var"), NOME, [ "=", EXPRESSION ] ;
 
-VALIDADE = "validade” , "(", SKU, ")";
+VARASSIGN = NOME, "=", EXPRESSION ;
 
 ENQUANTO = "enquanto", "(", CONDICAO, ")", BLOCO ;
 
@@ -56,7 +56,13 @@ EXPRESSION = TERM, { ("+" | "-"), TERM } ;
 
 TERM = FACTOR, { ("*" | "/"), FACTOR } ;
 
-FACTOR = (("+" | "-" | "!"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | CONFERIR| VALIDADE | HOJE;
+FACTOR = (("+" | "-" | "!"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | CONFERIR | VALIDADE | VAR;
+
+VALIDADE = "validade” , "(", SKU, POSICAO, EXPRESSION ")";
+
+CONFERIR = "estoque", "(", SKU [ ",", POSICAO ] ")";
+
+VAR = NOME;
 
 DATA_VALIDADE = DIGIT, DIGIT, "/”, DIGIT, DIGIT, "/”, DIGIT, DIGIT, DIGIT, DIGIT;
 
