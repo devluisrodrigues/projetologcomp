@@ -97,6 +97,7 @@ class SymbolTable:
                 
     def conferir(self, sku, posicao = ""):
         # Se não definir a posicao mostra a quantidade total do SKU em todo o estoque
+        sku = str(sku)
         total = 0
         if posicao == "":
             for posicao, produtos in self.estoque.items():
@@ -127,6 +128,8 @@ class SymbolTable:
         produtos_inicial = self.estoque[posicaoInicial]
         produtos_inicial = sorted(produtos_inicial, key=lambda x: x.validade)
         total = quantidade
+        
+        sku = str(sku)
         
         for produto in produtos_inicial:
             if produto.sku == sku:
@@ -413,6 +416,9 @@ class VarType(Node):
     
 class Identifier(Node):
     def evaluate(self, st):
+        print(st.auxiliary)
+        print(f"Identifier: {self.value}")
+        print(st.getAuxiliaryVar(self.value))
         return st.getAuxiliaryVar(self.value)
     
 class VarDec(Node):
@@ -429,6 +435,7 @@ class VarDec(Node):
         
         if len(self.children) == 3:
             value_type, value = self.children[2].evaluate(st)
+            print(f"valor obtido {value} do tipo {value_type}")
             if value_type != type:
                 raise Exception(f"Type mismatch: expected {type}, got {value_type}")
             st.setAuxiliaryVar(identifier, (type, value))
@@ -507,7 +514,9 @@ class ConferirOp(Node):
     def evaluate(self, st):
         sku = self.children[0].value
         posicao = self.children[1].value if len(self.children) == 2 else ""
-        return ("INT", st.conferir(sku, posicao))
+        valor = st.conferir(sku, posicao)
+        print(f"Conferir SKU: {sku}, Posição: {posicao}, Quantidade: {valor}")
+        return ("INT", valor)
         
 class ValidadeOp(Node):
     def evaluate(self, st):
