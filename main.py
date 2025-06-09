@@ -8,11 +8,22 @@ class Produto:
         self.sku = sku
         self.quantidade = quantidade
         self.validade = validade
+        
+    def __str__(self):
+        return f"Produto(nome={self.nome}, sku={self.sku}, quantidade={self.quantidade}, validade={self.validade})"
 
 class SymbolTable:
-    def __init__(self, parent=None):
+    def __init__(self):
         self.entrada = {}
         self.estoque = {}
+        self.auxiliary = {}
+        
+    # Caso um estado inicial de estoque tenha sido definido, 
+    def importaProduto(self, posicao, produto):
+        if posicao not in self.estoque:
+            self.estoque[posicao] = []
+        self.estoque[posicao].append(produto)
+        
 
     def entradaItem(self, key, item): # Entrada do produto
         if key not in self.entrada:
@@ -54,7 +65,7 @@ class SymbolTable:
         # Remove um produto que estava na recebimento e aloca na posição escolhida
         if quantidade <= 0:
             raise Exception("Quantidade a ser alocada não pode ser negativa ou zero")
-        
+                
         quantidade_disponivel = sum(produto.quantidade for produto in self.estoque["recebimento"] if produto.sku == key)
         
         if quantidade > quantidade_disponivel:
@@ -80,6 +91,9 @@ class SymbolTable:
         for produto in self.estoque["recebimento"][:]:
             if produto.quantidade == 0:
                 self.estoque["recebimento"].remove(produto)
+                
+        # Unifica produtos iguais na posição de destino
+        self.unificaProdutosIguais(posicao)
                 
     def conferir(self, sku, posicao = ""):
         # Se não definir a posicao mostra a quantidade total do SKU em todo o estoque
@@ -166,6 +180,22 @@ class SymbolTable:
         
         return "\n".join(resultado)
     
+    def validade(self, sku, posicao, dias):
+        if posicao not in self.estoque:
+            raise Exception(f"Posição {posicao} não encontrada no estoque")
+        
+        produtos = self.estoque[posicao]
+        produtos_ordenados = sorted(produtos, key=lambda x: x.validade)
+        quantidade = 0
+        for produto in produtos_ordenados:
+            if produto.sku == str(sku):
+                if (produto.validade - datetime.date.today()).days <= dias:
+                    quantidade += produto.quantidade
+                else:
+                    break
+        
+        return quantidade
+            
     # Remove determinada quantia de um SKU, se definir a posicao ele remove de uma posição específica, se não remove da primeira
     def diminuirQuantidade(self, sku, quantidade,posicao=""):
         if quantidade <= 0:
@@ -219,6 +249,23 @@ class SymbolTable:
                 agrupados[chave].quantidade += produto.quantidade
         # Substitui a lista antiga pela nova, agrupada
         self.estoque[posicao] = list(agrupados.values())
+        
+    def createAuxiliaryVar(self, identifier, type):
+        if identifier in self.auxiliary:
+            raise Exception(f"Variável auxiliar {identifier} já existe")
+        self.auxiliary[identifier] = (type, None)
+        
+    def setAuxiliaryVar(self, identifier, value):
+        if identifier not in self.auxiliary:
+            raise Exception(f"Variável auxiliar {identifier} não existe")
+        if self.auxiliary[identifier][0] != value[0]:
+            raise Exception(f"Tipo da variável auxiliar {identifier} não corresponde ao tipo do valor")
+        self.auxiliary[identifier] = (self.auxiliary[identifier][0], value[1])
+    
+    def getAuxiliaryVar(self, identifier):
+        if identifier not in self.auxiliary:
+            raise Exception(f"Variável auxiliar {identifier} não existe")
+        return self.auxiliary[identifier]
 
 class Token:
     def __init__(self, type, value):
@@ -356,10 +403,6 @@ class IntVal(Node):
     def evaluate(self,st):
         return ("INT", self.value)
     
-class StrVal(Node):
-    def evaluate(self,st):
-        return ("STR", self.value)
-    
 class BoolVal(Node):
     def evaluate(self,st):
         return ("BOOL", self.value)
@@ -370,20 +413,29 @@ class VarType(Node):
     
 class Identifier(Node):
     def evaluate(self, st):
-        return st.getter(self.value)
+        return st.getAuxiliaryVar(self.value)
     
 class VarDec(Node):
     def evaluate(self, st):
         identifier = self.children[0].value
         type = self.children[1].value
-        st.create(identifier, type)
-        if len(self.children) == 3:
-            value = self.children[2].evaluate(st)
-            st.setter(identifier, value)
     
+        if type == "INT":
+            st.createAuxiliaryVar(identifier, "INT")
+        elif type == "BOOL":
+            st.createAuxiliaryVar(identifier, "BOOL")
+        else:
+            raise Exception(f"Invalid variable type: {type}. Only INT and BOOL are allowed.")
+        
+        if len(self.children) == 3:
+            value_type, value = self.children[2].evaluate(st)
+            if value_type != type:
+                raise Exception(f"Type mismatch: expected {type}, got {value_type}")
+            st.setAuxiliaryVar(identifier, (type, value))
+        
 class Assign(Node):
     def evaluate(self, st):
-        st.setter(self.children[0].value, self.children[1].evaluate(st))
+        st.setAuxiliaryVar(self.children[0].value, self.children[1].evaluate(st))
         
 class Print(Node):
     def evaluate(self, st):
@@ -402,10 +454,7 @@ class Block(Node):
     def evaluate(self, st):
         for child in self.children:
             child.evaluate(st)
-            
-        return ("VOID", None)
-            
-# New Nodes:
+                        
 class EntradaOp(Node):
     def evaluate(self, st):
         nome = self.children[0].value
@@ -459,6 +508,14 @@ class ConferirOp(Node):
         sku = self.children[0].value
         posicao = self.children[1].value if len(self.children) == 2 else ""
         return ("INT", st.conferir(sku, posicao))
+        
+class ValidadeOp(Node):
+    def evaluate(self, st):
+        sku = self.children[0].value
+        posicao = self.children[1].value
+        dias = self.children[2].evaluate(st)[1]
+        quantidade = st.validade(sku, posicao, dias)
+        return ("INT", quantidade)
         
 class Tokenizer:
     def __init__(self, source):
@@ -614,22 +671,14 @@ class Tokenizer:
             elif next_value == "hoje":
                 self.next = Token("HOJE", next_value)
                 
-            # elif next_value == "int":
-            #     self.next = Token("TYPE", "INT")
-            # elif next_value == "bool":
-            #     self.next = Token("TYPE", "BOOL")
-            # elif next_value == "string":
-            #     self.next = Token("TYPE", "STR")
-            # elif next_value == "true":
-            #     self.next = Token("BOOL", next_value)
-            # elif next_value == "false":
-            #     self.next = Token("BOOL", next_value)
-            # elif next_value[0] == '"' and next_value[-1] == '"':
-            #     self.next = Token("STR", next_value[1:-1])
-            # elif next_value == "var":
-            #     self.next = Token("VAR", next_value)
-            # elif next_value == "return":
-            #     self.next = Token("RETURN", next_value)
+            elif next_value == "int_var":
+                self.next = Token("VAR", "INT")
+            elif next_value == "bool_var":
+                self.next = Token("VAR", "BOOL")
+            elif next_value == "true":
+                self.next = Token("BOOL", next_value)
+            elif next_value == "false":
+                self.next = Token("BOOL", next_value)
     
             else:
                 self.next = Token("NOME", next_value)
@@ -876,7 +925,40 @@ class Parser:
                         self.tokenizer.selectNext()
                         final_result = Print("Print", [Identifier(sku, [])])
                     else:
-                        raise Exception("Invalid statement, expected closing parenthesis")         
+                        raise Exception("Invalid statement, expected closing parenthesis")
+            
+        # Variaveis auxiliares:
+        elif self.tokenizer.next.type == "VAR":
+            var_type = self.tokenizer.next.value
+            self.tokenizer.selectNext()
+            if self.tokenizer.next.type == "NOME":
+                identifier_name = self.tokenizer.next.value
+                self.tokenizer.selectNext()
+                if self.tokenizer.next.type == "ASSIGN":
+                    self.tokenizer.selectNext()
+                    value = self.parseBExpression()
+                    if self.tokenizer.next.type == "NEW_LINE":
+                        self.tokenizer.selectNext()
+                        final_result = VarDec("VarDec", [Identifier(identifier_name, []), VarType(var_type, []), value])
+                    else:
+                        raise Exception(f"Invalid statement, got {self.tokenizer.next.type} expected new line after variable declaration")
+                elif self.tokenizer.next.type == "NEW_LINE":
+                    self.tokenizer.selectNext()
+                    final_result = VarDec("VarDec", [Identifier(identifier_name, []), VarType(var_type, [])])
+                    
+        elif self.tokenizer.next.type == "NOME":
+            identifier_name = self.tokenizer.next.value
+            self.tokenizer.selectNext()
+            if self.tokenizer.next.type == "ASSIGN":
+                self.tokenizer.selectNext()
+                value = self.parseBExpression()
+                if self.tokenizer.next.type == "NEW_LINE":
+                    self.tokenizer.selectNext()
+                    final_result = Assign("Assign", [Identifier(identifier_name, []), value])
+                else:
+                    raise Exception("Invalid statement, expected new line after assignment")
+            else:
+                raise Exception("Invalid statement, expected assignment operator after identifier")
             
         elif self.tokenizer.next.type == "WHILE":
             self.tokenizer.selectNext()
@@ -929,7 +1011,7 @@ class Parser:
     
     def parseBExpression(self):
         result = self.parseBTerm()
-
+        
         while self.tokenizer.next.type == "OR":
             self.tokenizer.selectNext()
             result = BinOp("||", [result, self.parseBTerm()])
@@ -995,7 +1077,6 @@ class Parser:
         return result
     
     def parseFactor(self):
-        
         # Conferir ( SKU, Posicao ) -> retorna a quantidade de itens na posição, se nao tiver posicao, retorna todos os itens do SKU
         if self.tokenizer.next.type == "CONFERIR":
             self.tokenizer.selectNext()
@@ -1021,44 +1102,56 @@ class Parser:
                         return ConferirOp("Conferir", [Identifier(sku, [])])
                     else:
                         raise Exception("Invalid statement, expected closing parenthesis")
+                    
+        # Validade (sku, posicao, dias) -> retorna a quantidade de produtos com validade dentro dos dias especificados
+        elif self.tokenizer.next.type == "VALIDADE":
+            self.tokenizer.selectNext()
+            if self.tokenizer.next.type == "OPEN_PAR":
+                self.tokenizer.selectNext()
+                if self.tokenizer.next.type == "INT":
+                    sku = int(self.tokenizer.next.value)
+                    self.tokenizer.selectNext()
+                    if self.tokenizer.next.type == "COMMA":
+                        self.tokenizer.selectNext()
+                        if self.tokenizer.next.type == "NOME":
+                            position = self.tokenizer.next.value
+                            self.tokenizer.selectNext()
+                            if self.tokenizer.next.type == "COMMA":
+                                self.tokenizer.selectNext()
+                                if self.tokenizer.next.type == "INT":
+                                    days = int(self.tokenizer.next.value)
+                                    self.tokenizer.selectNext()
+                                    if self.tokenizer.next.type == "CLOSE_PAR":
+                                        self.tokenizer.selectNext()
+                                        return ValidadeOp("Validade", [Identifier(sku, []), Identifier(position, []), IntVal(days, [])])
+                                    else:
+                                        raise Exception("Invalid statement, expected closing parenthesis")
+                                else:
+                                    raise Exception("Invalid statement, expected days")
+                            else:
+                                raise Exception("Invalid statement, expected closing parenthesis")
+                        else:
+                            raise Exception("Invalid statement, expected position name")
+                    else:
+                        raise Exception("Invalid statement, expected comma after sku")
+                else:
+                    raise Exception("Invalid statement, expected sku")
+        
+        elif self.tokenizer.next.type == "NOME":
+            result = Identifier(self.tokenizer.next.value, [])
+            self.tokenizer.selectNext()
+            return result
+        
+        elif self.tokenizer.next.type == "BOOL":
+            value = True if self.tokenizer.next.value.lower() == "true" else False
+            result = BoolVal(value, [])
+            self.tokenizer.selectNext()
+            return result
         
         elif self.tokenizer.next.type == "INT":
             result = IntVal(int(self.tokenizer.next.value), [])
             self.tokenizer.selectNext()
             return result
-        
-        elif self.tokenizer.next.type == "STR":
-            result = StrVal(self.tokenizer.next.value, [])
-            self.tokenizer.selectNext()
-            return result
-        
-        elif self.tokenizer.next.type == "BOOL":
-            result = BoolVal(self.tokenizer.next.value.lower() == "true", [])
-            self.tokenizer.selectNext()
-            return result
-        
-        # elif self.tokenizer.next.type == "IDENTIFIER":
-        #     identifier_name = self.tokenizer.next.value
-        #     self.tokenizer.selectNext()
-        #     if self.tokenizer.next.type == "OPEN_PAR":
-        #         self.tokenizer.selectNext()
-        #         args = []
-                
-        #         if self.tokenizer.next.type != "CLOSE_PAR":
-        #             args.append(self.parseBExpression())
-                    
-        #             while self.tokenizer.next.type == "COMMA":
-        #                 self.tokenizer.selectNext()
-        #                 args.append(self.parseBExpression())
-                        
-        #         if self.tokenizer.next.type == "CLOSE_PAR":
-        #             self.tokenizer.selectNext()
-        #             result = FuncCall(identifier_name, args)
-        #         else:
-        #             raise Exception("Parenthesis was not closed in function call")
-        #     else:
-        #         result = Identifier(identifier_name, [])
-        #     return result
         
         elif self.tokenizer.next.type == "PLUS":
             self.tokenizer.selectNext()
@@ -1123,7 +1216,35 @@ class PrePro():
             
         self.code = new_code
         return self.code
-        
+    
+def exportSymbolTable(symbol_table):
+    with open("estoque.txt", "w") as file:
+        for key, value in symbol_table.estoque.items():
+            file.write(f"{key}: {'; '.join([str(produto) for produto in value])}\n")
+         
+def importInitialStock(st, filename="estoque.txt"):
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                posicao, produtos = line.strip().split(": ")
+                posicao = posicao.strip()
+                produtos = produtos.split("; ")
+                for produto in produtos:
+                    nome, sku, quantidade, validade = produto.split(", ")
+                    nome = nome.split("=")[1].strip()
+                    sku = str(sku.split("=")[1].strip())
+                    quantidade = int(quantidade.split("=")[1].strip())
+                    
+                    validade = validade.replace(")","").split("=")[1].strip()
+                    ano, mes, dia = map(int, validade.split("-"))
+                    validade = datetime.date(ano, mes, dia)
+                    
+                    st.importaProduto(posicao, Produto(nome, sku, quantidade, validade))
+
+    except FileNotFoundError:
+        print(f"File {filename} not found. No initial stock to import.")
+        return
+    
     
 def main():
     filename = sys.argv[1]
@@ -1135,10 +1256,13 @@ def main():
     result = parser.run(code)
     
     st = SymbolTable()
+    if len(sys.argv) > 2:
+        importInitialStock(st, sys.argv[2])
+    
+    for posicao, produtos in st.estoque.items():
+        print(f"{posicao}: {', '.join([str(produto) for produto in produtos])}")
     result.evaluate(st)
     
-    for key, value in st.estoque.items():
-        for produto in value:
-            print(key,produto.nome, produto.sku, produto.quantidade, produto.validade)
+    exportSymbolTable(st)
 if __name__ == "__main__":
     main()
