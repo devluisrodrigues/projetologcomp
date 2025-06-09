@@ -23,6 +23,8 @@ int yylex(void);
 
 %token ENTRADA RECEBER ALOCAR VENDER DESCARTAR EXIBIR CONFERIR VALIDADE HOJE MOVER ENQUANTO SE SENAO
 
+%token BOOL_VAR INT_VAR TRUE FALSE
+
 %start program
 
 %%
@@ -41,24 +43,68 @@ lista_statements:
     ;
 
 statement:
-    ABRE_PAREN ID VIRGULA NUM FECHA_PAREN ATRIBUI ABRE_PAREN expressao VIRGULA DATA FECHA_PAREN
+      ENTRADA_ABRE
     | RECEBER ABRE_PAREN NUM VIRGULA expressao FECHA_PAREN
     | ALOCAR ABRE_PAREN NUM VIRGULA expressao VIRGULA ID FECHA_PAREN
-    | VENDER ABRE_PAREN NUM VIRGULA expressao FECHA_PAREN
-    | DESCARTAR ABRE_PAREN NUM VIRGULA expressao FECHA_PAREN
-    | EXIBIR ABRE_PAREN NUM FECHA_PAREN
-    | EXIBIR ABRE_PAREN ID FECHA_PAREN
-    | CONFERIR ABRE_PAREN NUM FECHA_PAREN
-    | VALIDADE ABRE_PAREN NUM FECHA_PAREN
+    | VENDER ABRE_PAREN NUM VIRGULA expressao vender_pos FECHA_PAREN
+    | DESCARTAR ABRE_PAREN NUM VIRGULA expressao descartar_pos FECHA_PAREN
+    | EXIBIR ABRE_PAREN exibir_arg FECHA_PAREN
+    | CONFERIR ABRE_PAREN NUM conferir_pos FECHA_PAREN
+    | VALIDADE ABRE_PAREN NUM validade_pos FECHA_PAREN
     | MOVER ABRE_PAREN NUM VIRGULA expressao VIRGULA ID VIRGULA ID FECHA_PAREN
-    | ENQUANTO ABRE_PAREN condicao FECHA_PAREN bloco
-    | SE ABRE_PAREN condicao FECHA_PAREN bloco
-    | SE ABRE_PAREN condicao FECHA_PAREN bloco SENAO bloco
+    | VARDEC
+    | VARASSIGN
+    | ENQUANTO ABRE_PAREN bexpression FECHA_PAREN bloco
+    | SE ABRE_PAREN bexpression FECHA_PAREN bloco
+    | SE ABRE_PAREN bexpression FECHA_PAREN bloco SENAO bloco
     ;
 
-condicao:
-    bterm
-    | condicao OR bterm
+ENTRADA_ABRE:
+    ABRE_PAREN ID VIRGULA NUM FECHA_PAREN ATRIBUI ABRE_PAREN expressao VIRGULA DATA FECHA_PAREN
+    ;
+
+vender_pos:
+      /* vazio */
+    | VIRGULA ID
+    ;
+
+descartar_pos:
+      /* vazio */
+    | VIRGULA ID
+    ;
+
+exibir_arg:
+      NUM
+    | ID
+    ;
+
+conferir_pos:
+      /* vazio */
+    | VIRGULA ID
+    ;
+
+validade_pos:
+      /* vazio */
+    | VIRGULA ID VIRGULA NUM
+    ;
+
+VARDEC:
+      BOOL_VAR ID varinit
+    | INT_VAR ID varinit
+    ;
+
+varinit:
+      /* vazio */
+    | ATRIBUI bexpression
+    ;
+
+VARASSIGN:
+      ID ATRIBUI bexpression
+    ;
+
+bexpression:
+      bterm
+    | bexpression OR bterm
     ;
 
 bterm:
@@ -90,6 +136,9 @@ fator:
     | MENOS fator
     | NOT fator
     | NUM
+    | ID
+    | TRUE
+    | FALSE
     | ABRE_PAREN expressao FECHA_PAREN
     | CONFERIR ABRE_PAREN NUM FECHA_PAREN
     | VALIDADE ABRE_PAREN NUM FECHA_PAREN

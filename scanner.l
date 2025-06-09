@@ -43,6 +43,10 @@ DATA       {DIGITO}{DIGITO}\/{DIGITO}{DIGITO}\/{DIGITO}{DIGITO}{DIGITO}{DIGITO}
 "enquanto"       return ENQUANTO;
 "se"             return SE;
 "senao"          return SENAO;
+"bool_var"       return BOOL_VAR;
+"int_var"        return INT_VAR;
+"true"           return TRUE;
+"false"          return FALSE;
 
 {DATA}           { yylval.str = strdup(yytext); return DATA; }
 {NUM}            { yylval.num = atoi(yytext); return NUM; }

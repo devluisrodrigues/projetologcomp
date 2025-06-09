@@ -416,9 +416,6 @@ class VarType(Node):
     
 class Identifier(Node):
     def evaluate(self, st):
-        print(st.auxiliary)
-        print(f"Identifier: {self.value}")
-        print(st.getAuxiliaryVar(self.value))
         return st.getAuxiliaryVar(self.value)
     
 class VarDec(Node):
@@ -435,7 +432,6 @@ class VarDec(Node):
         
         if len(self.children) == 3:
             value_type, value = self.children[2].evaluate(st)
-            print(f"valor obtido {value} do tipo {value_type}")
             if value_type != type:
                 raise Exception(f"Type mismatch: expected {type}, got {value_type}")
             st.setAuxiliaryVar(identifier, (type, value))
@@ -515,7 +511,7 @@ class ConferirOp(Node):
         sku = self.children[0].value
         posicao = self.children[1].value if len(self.children) == 2 else ""
         valor = st.conferir(sku, posicao)
-        print(f"Conferir SKU: {sku}, Posição: {posicao}, Quantidade: {valor}")
+        # print(f"Conferir SKU: {sku}, Posição: {posicao}, Quantidade: {valor}")
         return ("INT", valor)
         
 class ValidadeOp(Node):

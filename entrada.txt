@@ -1,28 +1,16 @@
 {
-    (Arroz_Integral, 12345) = (100, 01/12/2025)
-    (Feijao_Preto, 67890) = (50, 15/11/2024)
+    (Arroz_Integral, 12345) = (100, 09/06/2025)
+    (leite, 67890) = (200, 15/11/2025)
+    (Sal, 54321) = (50, 20/10/2025)
 
-    receber(12345, 100*22)
-    receber(67890, 50)
+    receber(12345, 100)
+    receber(67890, 200)
+    receber(54321, 30)
 
+    alocar(67890, 200, B2)
     alocar(12345, 100, A1)
-    alocar(67890, 50, B2)
 
     exibir(A1)
-    exibir(B2)
 
-    se (validade(67890) < hoje()) {
-        descartar(67890, 100)
-    } senao {
-        vender(67890, 10)
-    }
-
-    estoque(12345)
-
-    exibir(12345)
-
-    enquanto (estoque(12345) > 0) {
-        mover(12345, 1, A1, B2)
-    }
-
+    bool_var teste2 = true
 }

@@ -22,31 +22,31 @@ Assim, a linguagem poderia operar a partir de um estado inicial recebido, compil
 
 BLOCO = "{", "\n", { STATEMENT }, "}";
 
-STATEMENT = ( λ | ENTRADA | RECEBER | ALOCAR | MOVER | VENDER | DESCARTAR | EXIBIR | VARDEC | VARASSIGN | ENQUANTO | SE), "\n" ;
+STATEMENT = ( λ | ENTRADA | RECEBER | ALOCAR | MOVER | VENDER | DESCARTAR | EXIBIR | VARDEC | VARASSIGN | ENQUANTO | SE ), "\n" ;
 
-ENTRADA = "(",NOME, ",", SKU, ")", "=", "(", EXPRESSION, ",", DATA_VALIDADE, ")”;
+ENTRADA = "(", NOME, ",", SKU, ")", "=", "(", EXPRESSION, ",", DATA_VALIDADE, ")";
 
 RECEBER = "receber", "(", SKU, ",", EXPRESSION, ")";
 
 ALOCAR = "alocar", "(", SKU, ",", EXPRESSION, ",", POSICAO, ")";
 
-MOVER = "mover", "(", SKU, ",", EXPRESSION, POSICAO,",", POSICAO ")" ;
+MOVER = "mover", "(", SKU, ",", EXPRESSION, ",", POSICAO, ",", POSICAO, ")";
 
-VENDER = "vender", "(", SKU, ",", EXPRESSION, ")";
+VENDER = "vender", "(", SKU, ",", EXPRESSION, [",", POSICAO], ")";
 
-DESCARTAR = "descartar", "(", SKU, ",", EXPRESSION, ")";
+DESCARTAR = "descartar", "(", SKU, ",", EXPRESSION, [",", POSICAO], ")";
 
-EXIBIR = "exibir", "(", SKU | POSICAO, ")" ;
+EXIBIR = "exibir", "(", SKU | POSICAO, ")";
 
-VARDEC = ("bool_var" | "int_var"), NOME, [ "=", EXPRESSION ] ;
+VARDEC = ("bool_var" | "int_var"), NOME, [ "=", BEXPRESSION ];
 
-VARASSIGN = NOME, "=", EXPRESSION ;
+VARASSIGN = NOME, "=", BEXPRESSION ;
 
-ENQUANTO = "enquanto", "(", CONDICAO, ")", BLOCO ;
+ENQUANTO = "enquanto", BEXPRESSION, BLOCO ;
 
-SE = "se", "(", CONDICAO, ")", BLOCO, [ "senao", BLOCO ]
+SE = "se", BEXPRESSION, BLOCO, [ "senao", BLOCO ];
 
-CONDICAO = BTERM, { "||", BTERM } ;
+BEXPRESSION = BTERM, { "||", BTERM } ;
 
 BTERM = REXPRE, { "&&", REXPRE } ;
 
@@ -56,29 +56,35 @@ EXPRESSION = TERM, { ("+" | "-"), TERM } ;
 
 TERM = FACTOR, { ("*" | "/"), FACTOR } ;
 
-FACTOR = (("+" | "-" | "!"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | CONFERIR | VALIDADE | VAR;
+FACTOR = (("+" | "-" | "!"), FACTOR)
+       | NUMBER
+       | "(", BEXPRESSION, ")"
+       | CONFERIR
+       | VALIDADE
+       | VAR
+       | BOOL ;
 
-VALIDADE = "validade” , "(", SKU, POSICAO, EXPRESSION ")";
+VALIDADE = "validade", "(", SKU, ",", POSICAO, ",", NUMBER, ")";
 
-CONFERIR = "estoque", "(", SKU [ ",", POSICAO ] ")";
+CONFERIR = "estoque", "(", SKU, [",", POSICAO], ")";
 
 VAR = NOME;
 
-DATA_VALIDADE = DIGIT, DIGIT, "/”, DIGIT, DIGIT, "/”, DIGIT, DIGIT, DIGIT, DIGIT;
+DATA_VALIDADE = NUMBER, "/", NUMBER, "/", NUMBER ;
 
-HOJE = "hoje", "(", ")" ;
+BOOL = "true" | "false" ;
 
-POSICAO = LETTER, { LETTER | DIGIT | "_" } ;
+POSICAO = NOME ;
 
 NOME = LETTER, { LETTER | DIGIT | "_" } ;
 
 NUMBER = DIGIT, { DIGIT } ;
 
-SKU = DIGIT, { DIGIT } ;
+SKU = NUMBER ;
 
 LETTER = ( a | ... | z | A | ... | Z ) ;
 
-DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
+DIGIT = ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ) ;
 
 
 ---
