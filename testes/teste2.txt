@@ -9,4 +9,6 @@
     exibir(67890)
 
     mover(12345, 45, A1, C1)
+
+    exibir(12345)
 }

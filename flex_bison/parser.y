@@ -50,7 +50,6 @@ statement:
     | DESCARTAR ABRE_PAREN NUM VIRGULA expressao descartar_pos FECHA_PAREN
     | EXIBIR ABRE_PAREN exibir_arg FECHA_PAREN
     | CONFERIR ABRE_PAREN NUM conferir_pos FECHA_PAREN
-    | VALIDADE ABRE_PAREN NUM validade_pos FECHA_PAREN
     | MOVER ABRE_PAREN NUM VIRGULA expressao VIRGULA ID VIRGULA ID FECHA_PAREN
     | VARDEC
     | VARASSIGN
@@ -81,11 +80,6 @@ exibir_arg:
 conferir_pos:
       /* vazio */
     | VIRGULA ID
-    ;
-
-validade_pos:
-      /* vazio */
-    | VIRGULA ID VIRGULA NUM
     ;
 
 VARDEC:
@@ -141,7 +135,7 @@ fator:
     | FALSE
     | ABRE_PAREN expressao FECHA_PAREN
     | CONFERIR ABRE_PAREN NUM FECHA_PAREN
-    | VALIDADE ABRE_PAREN NUM FECHA_PAREN
+    | VALIDADE ABRE_PAREN NUM VIRGULA ID VIRGULA NUM FECHA_PAREN
     | HOJE ABRE_PAREN FECHA_PAREN
     ;
 

@@ -96,6 +96,7 @@ DIGIT = ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ) ;
 
 2. **Flex e Bison:**
 
+Acesse o diretório `flex_bison` para encontrar os arquivos `scanner.l` e `parser.y`.
 
 Os arquivos do Flex e Bison foram criados para serem utilizados em conjunto, o arquivo `scanner.l` é o Scanner, que realiza o papel de tokenizer através do Flex, e o arquivo `parser.y` é o Parser, que realiza a análise sintática através do Bison. O arquivo `main.c` é o ponto de entrada do programa, onde o Scanner e o Parser são inicializados e executados.
 
@@ -132,6 +133,8 @@ python main.py entrada.txt estoque.txt
 ```
 
 Onde o `estoque.txt` contém o estado inicial do estoque, e o `entrada.txt` contém as operações a serem realizadas sobre esse estoque.
+
+**Observação:** Foi adaptado o Parser e o Tokenizer do compilador da matéria para que a linguagem criado possa ser interpretada pela VM. Assim, o Flex e o Bison desenvolvidos para a linguagem acabaram não sendo utilizados, mas estão disponíveis no diretório `flex_bison` caso seja necessário.
 
 ----
 
@@ -230,13 +233,14 @@ Assim, o comando para executar o segundo teste com o estoque do primeiro teste s
 python3 main.py testes/teste2.txt estoque.txt 
 ```
 
-O programa irá printar o seguinte resultado:
+O programa irá executar e printar o seguinte resultado:
 
 ```
 Nenhum produto encontrado com o SKU 67890
+Posição: C1, Produto: Arroz_Integral, SKU: 12345, Quantidade: 90, Validade: 2025-06-09
 ```
 
-Isso ocorre, pois todos os produtos com SKU 67890 foram vendidos através do loop criado no teste 2, e ao tentar exibir o produto com SKU 67890, o programa não encontra nenhum produto com esse SKU no estoque. Isso não levanta nenhum erro, apenas informa para o usuário que não há produtos com o SKU especificado.
+O primeiro print ocorre, pois todos os produtos com SKU 67890 foram vendidos através do loop criado no teste 2, e ao tentar exibir o produto com SKU 67890, o programa não encontra nenhum produto com esse SKU no estoque. Isso não levanta nenhum erro, apenas informa para o usuário que não há produtos com o SKU especificado.
 
 Saída do estoque após a execução do segundo teste:
 
@@ -244,6 +248,8 @@ Saída do estoque após a execução do segundo teste:
 C1: Produto(nome=Arroz_Integral, sku=12345, quantidade=90, validade=2025-06-09)
 E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
 ```
+
+- teste
 
 ----
 
