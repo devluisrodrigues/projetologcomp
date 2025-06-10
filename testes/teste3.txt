@@ -19,4 +19,6 @@
         int_var quantidade_para_mover = total_arroz - 60
         mover(12345, quantidade_para_mover, A1, A10)
     }
+
+    exibir(12345)
 }

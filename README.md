@@ -275,6 +275,8 @@ E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
         int_var quantidade_para_mover = total_arroz - 60
         mover(12345, quantidade_para_mover, A1, A10)
     }
+
+    exibir(12345)
 }
 ```
 
@@ -283,6 +285,12 @@ Esse teste exemplifica o recebimento de um produto com o mesmo SKU, mas com uma 
 Caso quisesse receber o produto com a data de validade mais antiga, seria necessário realizar duas operações de recebimento entre as entradas. Assim, o primeiro recebimento seria feito com a data de validade mais antiga, e o segundo recebimento seria feito com a data de validade mais recente, garantindo que o estoque seja atualizado corretamente.
 
 Em seguida, foi colocado um exemplo de controle de quantidade de produtos nas posições de estoque, caso determinada posição tenha mais de 60 unidades do produto, o programa irá mover a quantidade excedente para a posição A10.
+
+O print do programa após a execução do teste será:
+
+```
+Posição: A1, Produto: Arroz_Integral, SKU: 12345, Quantidade: 60, Validade: 2025-06-09 Posição: A10, Produto: Arroz_Integral, SKU: 12345, Quantidade: 25, Validade: 2025-06-09
+```
 
 ----
 
