@@ -22,6 +22,12 @@ Assim, a linguagem poderia operar a partir de um estado inicial recebido, compil
 
 ---
 
+## Antes de continuar:
+
+Para o melhor entendimento do projeto, é recomendado a leitura do conceito 5, uma apresentação de Power Point `Linguagem de controle de estoque.pptx`, que contém uma visão geral da linguagem, suas principais características, curiosidades e um exemplo de uso.
+
+---
+
 ## Entregáveis
 
 1. **EBNF pensada:**
