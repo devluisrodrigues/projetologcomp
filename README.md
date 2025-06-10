@@ -191,6 +191,11 @@ Os testes feitos estão disponíveis no diretório `testes`. Eles incluem exempl
 }
 ```
 
+Execute com
+```bash
+python3 main.py testes/teste1.txt
+```
+
 Durante sua execução, o programa irá printar para o usuário, por conta dos tokens `exibir`:
 ```
 Produto: Arroz_Integral, SKU: 12345, Quantidade: 100, Validade: 2025-06-09
@@ -225,6 +230,11 @@ recebimento: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
 ```
 
 Perceba que o segundo teste, tenta alocar o produto com SKU 54321, porém, em nenhum momento foi feito o recebimento desse produto, logo, o programa irá falhar caso seja executado sem nenhum estoque inicial definido.
+
+Ao executar o comando:
+```bash
+python3 main.py testes/teste2.txt
+```
 
 O usuário irá receber a seguinte mensagem de erro:
 
@@ -284,6 +294,11 @@ E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
 
     exibir(12345)
 }
+```
+
+Execute com o comando:
+```bash
+python3 main.py testes/teste3.txt
 ```
 
 Esse teste exemplifica o recebimento de um produto com o mesmo SKU, mas com uma data de validade diferente. O programa irá receber duas entradas do produto "Arroz Integral" com o SKU 12345, uma com validade para 09/06/2025 e outra para 28/06/2025. Como foi feito o recebimento parcial, apenas a quantidade do produto com a data de validade mais recente será considerada no estoque, as demais serão devolvidas.
