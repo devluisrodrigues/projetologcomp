@@ -38,7 +38,7 @@ class SymbolTable:
             raise Exception(f"Não é possível receber o produto {key}, não existe esse SKU no sistema")
         if quantidade <= 0:
             raise Exception("Quantidade a ser recebida não pode ser negativa ou zero")
-        
+
         quantidade_disponivel = sum(produto.quantidade for produto in self.entrada[key])
         if quantidade > quantidade_disponivel:
             raise Exception(f"Não é possível receber o produto {key}, não foi inserida uma quantidade suficiente no estoque para receber {quantidade} unidades")
@@ -65,6 +65,8 @@ class SymbolTable:
         # Remove um produto que estava na recebimento e aloca na posição escolhida
         if quantidade <= 0:
             raise Exception("Quantidade a ser alocada não pode ser negativa ou zero")
+        if "recebimento" not in self.estoque or len(self.estoque["recebimento"]) == 0:
+            raise Exception(f"Não é possível alocar o produto {key}, nada foi recebido no estoque")
                 
         quantidade_disponivel = sum(produto.quantidade for produto in self.estoque["recebimento"] if produto.sku == key)
         
@@ -167,7 +169,7 @@ class SymbolTable:
         for produto in produtos:
             resultado.append(f"Produto: {produto.nome}, SKU: {produto.sku}, Quantidade: {produto.quantidade}, Validade: {produto.validade}")
         
-        return "\n".join(resultado)
+        return " ".join(resultado)
     
     def exibirSKU(self, sku):
         total = 0
@@ -181,7 +183,7 @@ class SymbolTable:
         if total == 0:
             return f"Nenhum produto encontrado com o SKU {sku}"
         
-        return "\n".join(resultado)
+        return " ".join(resultado)
     
     def validade(self, sku, posicao, dias):
         if posicao not in self.estoque:
@@ -305,10 +307,6 @@ class IfOp(Node):
             return self.children[1].evaluate(st)
         elif len(self.children) == 3: # Se existir "else"
             return self.children[2].evaluate(st)
-            
-class Read(Node):
-    def evaluate(self,st):
-        return ("INT",int(input()))
     
 class NoOp(Node):
     def evaluate(self,st):
@@ -323,13 +321,6 @@ class BinOp(Node):
         if self.value == "+":
             if type_left == "INT" and type_right == "INT":
                 return ("INT",value_left + value_right)
-            elif type_left == "STR" and type_right == "STR":
-                return ("STR", str(value_left) + str(value_right))
-            else:
-                value_left = str(value_left).lower() if type_left == "BOOL" else str(value_left)
-                value_right = str(value_right).lower() if type_right == "BOOL" else str(value_right)
-                
-                return ("STR", value_left + value_right)
             
         elif self.value == "-":
             if same_type and type_left == "INT":
@@ -692,7 +683,6 @@ class Tokenizer:
             raise Exception(f"Invalid token, _{atual}_")
                 
         
-
 class Parser:
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
@@ -1173,19 +1163,6 @@ class Parser:
             result = UnOp("!", [self.parseFactor()])
             return result
         
-        elif self.tokenizer.next.type == "READ":
-            self.tokenizer.selectNext()
-            if self.tokenizer.next.type == "OPEN_PAR":
-                self.tokenizer.selectNext()
-                result = Read("Scan", [])
-                
-                if self.tokenizer.next.type == "CLOSE_PAR":
-                    self.tokenizer.selectNext()
-                    return result
-                
-                else:
-                    raise Exception("Parenthesis was not closed in read")
-        
         elif self.tokenizer.next.type == "OPEN_PAR":
             self.tokenizer.selectNext()
             resultado = self.parseBExpression()
@@ -1225,6 +1202,8 @@ class PrePro():
 def exportSymbolTable(symbol_table):
     with open("estoque.txt", "w") as file:
         for key, value in symbol_table.estoque.items():
+            if len(value) == 0:
+                continue
             file.write(f"{key}: {'; '.join([str(produto) for produto in value])}\n")
          
 def importInitialStock(st, filename="estoque.txt"):
@@ -1264,8 +1243,6 @@ def main():
     if len(sys.argv) > 2:
         importInitialStock(st, sys.argv[2])
     
-    for posicao, produtos in st.estoque.items():
-        print(f"{posicao}: {', '.join([str(produto) for produto in produtos])}")
     result.evaluate(st)
     
     exportSymbolTable(st)

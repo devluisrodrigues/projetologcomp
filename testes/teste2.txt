@@ -1,0 +1,12 @@
+{
+    alocar(54321, 30 , E2)
+
+
+    enquanto(estoque(67890, B2) > 0) {
+        vender(67890, 10, B2)
+    }
+
+    exibir(67890)
+
+    mover(12345, 45, A1, C1)
+}

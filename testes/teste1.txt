@@ -1,0 +1,35 @@
+{
+    (Arroz_Integral, 12345) = (100, 09/06/2025)
+    (leite, 67890) = (200, 15/11/2025)
+    (Sal, 54321) = (50, 20/10/2025)
+
+    receber(12345, 100)
+    receber(67890, 200)
+    receber(54321, 30)
+
+    alocar(67890, 200, B2)
+    alocar(12345, 100, A1)
+
+    exibir(A1)
+
+    bool_var teste2 = true
+
+    int_var quantidade_quase_vencida = validade(12345, A1, 10)
+
+    se (quantidade_quase_vencida > 10) {
+        descartar(12345, 10, A1)
+    } senao {
+        vender(12345, 5, A1)
+    }
+
+    exibir(12345)
+
+    int_var teste = estoque(12345)
+
+    enquanto (teste > 0) {
+        teste = teste - 10
+        mover(12345, 5, A1, C1)
+    }
+
+    exibir(12345)
+}
