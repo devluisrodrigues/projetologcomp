@@ -136,6 +136,8 @@ Onde o `estoque.txt` contém o estado inicial do estoque, e o `entrada.txt` cont
 
 **Observação:** Foi adaptado o Parser e o Tokenizer do compilador da matéria para que a linguagem criado possa ser interpretada pela VM. Assim, o Flex e o Bison desenvolvidos para a linguagem acabaram não sendo utilizados, mas estão disponíveis no diretório `flex_bison` caso seja necessário.
 
+**Observação 2:** Os produtos que não foram recebidos no estoque não serão passados para o estoque final, ou seja, se determinado produto deu entrada, mas não foi recebido até o fim do programa, ele não será considerado no estoque final. Isso é importante para garantir que apenas os produtos que passaram pelo processo de recebimento sejam considerados no estoque.
+
 ----
 
 4. **Criar um exemplo de testes que demonstre as características da sua Linguagem**
@@ -249,7 +251,38 @@ C1: Produto(nome=Arroz_Integral, sku=12345, quantidade=90, validade=2025-06-09)
 E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
 ```
 
-- teste
+- teste/teste3.txt
+
+```
+{
+    (Arroz_Integral, 12345) = (100, 09/06/2025)
+    (Arroz_Integral, 12345) = (100, 28/06/2025)
+
+    receber(12345, 100)
+    alocar(12345, 100, A1)
+
+    int_var quantidade_quase_vencida = -validade(12345, A1, 10)
+
+    se (quantidade_quase_vencida > 0) {
+        descartar(12345, 10, A1)
+    } senao {
+        vender(12345, 15, A1)
+    }
+
+    int_var total_arroz = estoque(12345, A1)
+
+    se (total_arroz > 60) {
+        int_var quantidade_para_mover = total_arroz - 60
+        mover(12345, quantidade_para_mover, A1, A10)
+    }
+}
+```
+
+Esse teste exemplifica o recebimento de um produto com o mesmo SKU, mas com uma data de validade diferente. O programa irá receber duas entradas do produto "Arroz Integral" com o SKU 12345, uma com validade para 09/06/2025 e outra para 28/06/2025. Como foi feito o recebimento parcial, apenas a quantidade do produto com a data de validade mais recente será considerada no estoque, as demais serão devolvidas.
+
+Caso quisesse receber o produto com a data de validade mais antiga, seria necessário realizar duas operações de recebimento entre as entradas. Assim, o primeiro recebimento seria feito com a data de validade mais antiga, e o segundo recebimento seria feito com a data de validade mais recente, garantindo que o estoque seja atualizado corretamente.
+
+Em seguida, foi colocado um exemplo de controle de quantidade de produtos nas posições de estoque, caso determinada posição tenha mais de 60 unidades do produto, o programa irá mover a quantidade excedente para a posição A10.
 
 ----
 

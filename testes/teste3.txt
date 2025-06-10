@@ -1,0 +1,22 @@
+{
+    (Arroz_Integral, 12345) = (100, 09/06/2025)
+    (Arroz_Integral, 12345) = (100, 28/06/2025)
+
+    receber(12345, 100)
+    alocar(12345, 100, A1)
+
+    int_var quantidade_quase_vencida = -validade(12345, A1, 10)
+
+    se (quantidade_quase_vencida > 0) {
+        descartar(12345, 10, A1)
+    } senao {
+        vender(12345, 15, A1)
+    }
+
+    int_var total_arroz = estoque(12345, A1)
+
+    se (total_arroz > 60) {
+        int_var quantidade_para_mover = total_arroz - 60
+        mover(12345, quantidade_para_mover, A1, A10)
+    }
+}

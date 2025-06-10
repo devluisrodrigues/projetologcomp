@@ -1,2 +1,2 @@
-C1: Produto(nome=Arroz_Integral, sku=12345, quantidade=90, validade=2025-06-09)
-E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
+A1: Produto(nome=Arroz_Integral, sku=12345, quantidade=60, validade=2025-06-09)
+A10: Produto(nome=Arroz_Integral, sku=12345, quantidade=25, validade=2025-06-09)
