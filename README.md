@@ -4,15 +4,15 @@ Para a atividade supervisionada da matéria, o aluno idealizou uma linguagem vol
 
 A operação logística imaginada pode ser quebrada em três etapas macros:
 
-- Entrada: Etapa inicial, onde os produtos são recebidos e registrados no sistema, incluindo informações como nome, SKU (identificador único), quantidade e data de validade.
+- **Entrada**: Etapa inicial, onde os produtos são recebidos e registrados no sistema, incluindo informações como nome, SKU (identificador único), quantidade e data de validade.
 
-- Recebimento: Etapa inicial, entrada de produtos na cadeia logística, atua em cima dos produtos que deram entrada no sistema, essa etapa acompanha um quality check, onde é verificado se os produtos estão em conformidade com o esperado. Assim, a quantidade recebida não é necessariamente a mesma que a quantidade registrada na entrada.
+- **Recebimento**: Etapa inicial, entrada de produtos na cadeia logística, atua em cima dos produtos que deram entrada no sistema, essa etapa acompanha um quality check, onde é verificado se os produtos estão em conformidade com o esperado. Assim, a quantidade recebida não é necessariamente a mesma que a quantidade registrada na entrada.
   
-- Alocação: Feito o recebimento, é reconhecida a entrada dos produtos na cadeia, mas ainda é necessário atribuir uma posição.
+- **Alocação**: Feito o recebimento, é reconhecida a entrada dos produtos na cadeia, mas ainda é necessário atribuir uma posição.
 
-- Movimentação: Após a alocação, é possível mover os produtos para outras posições, caso necessário.
+- **Movimentação**: Após a alocação, é possível mover os produtos para outras posições, caso necessário.
   
-- Venda/Descarte : Feita a alocação, é necessário remover o item do estoque em caso de venda, ou descartá-lo.
+- **Venda/Descarte** : Feita a alocação, é necessário remover o item do estoque em caso de venda, ou descartá-lo.
   
 Observação: Para a operação imaginada, cada produto dispõe de:
 
@@ -135,7 +135,7 @@ Onde o `estoque.txt` contém o estado inicial do estoque, e o `entrada.txt` cont
 
 ----
 
-4. Criar um exemplo de testes que demonstre as características da sua Linguagem.
+4. **Criar um exemplo de testes que demonstre as características da sua Linguagem**
 
 Para demonstrar as características da linguagem, foram criados programas de teste que realizam operações de entrada, recebimento, alocação, movimentação, venda e descarte de produtos. Esses testes foram desenvolvidos para mostrar como a linguagem pode ser utilizada para gerenciar o fluxo de estoque de um galpão logístico.
 
@@ -247,8 +247,8 @@ E2: Produto(nome=Sal, sku=54321, quantidade=30, validade=2025-10-20)
 
 ----
 
-5. Montar uma apresentação de slides sobre a linguagem criada.
+5. **Montar uma apresentação de slides sobre a linguagem criada.**
 
-A apresentação de slides foi criada e está disponível no arquivo `apresentacao.pptx`. Ela contém uma visão geral da linguagem, esse slide mostra como a linguagem foi projetada, suas principais características, curiosidades e um exemplo de uso.
+A apresentação de slides foi criada e está disponível no arquivo `Linguagem de controle de estoque.pptx`. Ela contém uma visão geral da linguagem, esse slide mostra como a linguagem foi projetada, suas principais características, curiosidades e um exemplo de uso.
 
 ----
