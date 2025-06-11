@@ -124,15 +124,17 @@ gcc -o projeto main.c parser.tab.c lex.yy.c
 
 Para essa VM foi feita uma adaptação do compilador usado na matéria, o código foi disponibilizado no arquivo `main.py`. A VM é capaz de interpretar um programa escrito na linguagem definida pela EBNF e executá-lo, manipulando o estado do estoque conforme as operações definidas.
 
+Para essa adaptação foi necessário alterar todo o funcionamneto da symbol table, que agora armazena os produtos e suas respectivas posições no estoque, além de armazenar as variáveis definidas pelo usuário. A VM também implementa as operações de entrada, recebimento, alocação, movimentação, venda e descarte de produtos.
+
 Assim, para executar a VM, basta rodar o seguinte comando:
 
 ```bash
 python main.py entrada.txt
 ```
 
-No caso acima, o compilador irá partir de um estoque inicial vazio e irá processar as operações definidas no arquivo `entrada.txt`, retornando o estado final do no arquivo `estoque.txt`.
+No caso acima, o compilador irá partir de um **estoque inicial vazio** e irá processar as operações definidas no arquivo `entrada.txt`, retornando o estado final do no arquivo `estoque.txt`.
 
-De forma semelhante, é possível interpretar um programa a partir de um estado inicial de estoque já definido. Assim, é possível utilizar uma saída anterior gerada na execução da VM como arquivo de entrada para a próxima execução, permitindo a continuidade do fluxo logístico. Um exemplo de uso seria:
+De forma semelhante, é possível interpretar um programa a partir de um **estado inicial de estoque já definido**. Assim, é possível utilizar uma saída anterior gerada na execução da VM como arquivo de entrada para a próxima execução, permitindo a continuidade do fluxo logístico. Um exemplo de uso seria:
 
 ```bash
 python main.py entrada.txt estoque.txt
@@ -311,6 +313,13 @@ O print do programa após a execução do teste será:
 
 ```
 Posição: A1, Produto: Arroz_Integral, SKU: 12345, Quantidade: 60, Validade: 2025-06-09 Posição: A10, Produto: Arroz_Integral, SKU: 12345, Quantidade: 25, Validade: 2025-06-09
+```
+
+E a saída do estoque após a execução do teste será:
+
+```
+A1: Produto(nome=Arroz_Integral, sku=12345, quantidade=60, validade=2025-06-09)
+A10: Produto(nome=Arroz_Integral, sku=12345, quantidade=25, validade=2025-06-09)
 ```
 
 ----
