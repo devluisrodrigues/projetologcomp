@@ -112,7 +112,10 @@ flex scanner.l
 bison -d parser.y
 
 gcc -o projeto main.c parser.tab.c lex.yy.c
+```
+Após a compilação, o executável `projeto` será gerado. Para executar o programa, basta rodar o seguinte comando:
 
+```bash
 ./projeto < entrada.txt
 ```
 
