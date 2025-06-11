@@ -18,8 +18,6 @@ Observação: Para a operação imaginada, cada produto dispõe de:
 
 **Nome, SKU ( identificador único), quantidade e data de validade.**
 
-Assim, a linguagem poderia operar a partir de um estado inicial recebido, compilar e retornar o estado da logística após as operações realizadas.
-
 ---
 
 ## Antes de continuar:
