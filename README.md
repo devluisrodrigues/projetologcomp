@@ -322,6 +322,63 @@ A1: Produto(nome=Arroz_Integral, sku=12345, quantidade=60, validade=2025-06-09)
 A10: Produto(nome=Arroz_Integral, sku=12345, quantidade=25, validade=2025-06-09)
 ```
 
+- testes/teste4.txt
+
+```
+{
+    (Lasanha, 12345) = (100, 28/06/2025)
+
+    receber(12345, 100)
+    alocar(12345, 100, A1)
+
+    mover(12345, 150, A1, C1)
+}
+```
+
+Resulta em um erro, pois o programa tenta mover uma quantidade maior do que a disponível no estoque. O comando para executar esse teste é:
+
+```bash
+python3 main.py testes/teste4.txt
+```
+
+O programa irá levantar a seguinte exceção:
+
+```
+Exception: Não foi possível mover 150 unidades do SKU 12345 da posição A1 para a posição C1, quantidade insuficiente
+```
+
+O mesmo iria ocorrer caso fosse tentado vender ou descartar uma quantidade maior do que a disponível no estoque, garantindo que o programa não permita operações inválidas.
+
+- testes/teste5.txt
+
+```
+{
+    (Lasanha, 80333) = (100, 28/06/2025)
+
+    receber(80333, 100)
+    alocar(80333, 100, A1)
+    mover(80333, 20, A1, B2)
+
+    vender(80333, 10)
+}
+```
+
+O teste acima mostra o processo de venda sem declaração de posição, nesse caso, o produto vendido será retirado conforme a ordem que as posições foram inseridas no estoque. Ou seja, como o produto com SKU 80333 foi alocado na posição A1 e depois movido para a posição B2, ao vender 10 unidades, o programa irá retirar as unidades da posição A1 primeiro, e se não houver unidades suficientes nessa posição, irá retirar da posição B2.
+
+O comando para executar esse teste é:
+
+```bash
+python3 main.py testes/teste5.txt
+```
+
+O output do estoque após a execução do teste será:
+
+```
+A1: Produto(nome=Lasanha, sku=80333, quantidade=70, validade=2025-06-28)
+B2: Produto(nome=Lasanha, sku=80333, quantidade=10, validade=2025-06-28)
+```
+
+
 ----
 
 5. **Montar uma apresentação de slides sobre a linguagem criada.**
